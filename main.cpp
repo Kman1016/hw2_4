@@ -34,18 +34,26 @@ void pwm_ramp() {
 };
 
 void AOIn() {
-    float ADC;
+    float ADC, sum = 0;
+    int sample_num = 0;
     while (true) {
         ADC = AO.read();
         printf("%f\n", ADC);
-        if (ADC > 0.35) {
-            PinA = 1;
-        }
-        else {
-            PinA = 0;
+
+        sum = sum + ADC;
+        sample_num = sample_num + 1;
+        if (sample_num == 50) {
+            sample = sample + 50;
+            sample_num = 0;
+            if (sum/50 > 0.35) {
+                PinA = 1;
+            }
+            else {
+                PinA = 0;
+            }
+            sum = 0;
         }
         LED = PinA;
-        sample = sample + 1;
         ThisThread::sleep_for(1ms);
     }
 };
